@@ -18,6 +18,7 @@ import os
 import sys
 import threading
 import logging
+import argparse
 from datetime import datetime
 
 import pyfiglet
@@ -35,12 +36,24 @@ logging.basicConfig(level=logging.DEBUG)
 # Private Methods ###############################################################
 #################################################################################
 
+def _init_command_line_arguments():
+    """Initializing argument parser for command line arguments"""
+    global args
+    argument_parser = argparse.ArgumentParser()
+    argument_parser.add_argument('-i', '--input', help='Name of input file.')
+    argument_parser.add_argument('-o', '--output', help='Name of output file.')
+    argument_parser.add_argument('-t', '--threads', type=int, default=1, help='No. of threads for processor.')
+    args = argument_parser.parse_args()
+
+#################################################################################
+
 def _print_header():
     """Printing the header information"""
     automatron_text_art = pyfiglet.figlet_format("Automatron")
     print(automatron_text_art)
     print("#"*80)
     print(f"Script : {__file__}")
+    print(f"Command line params : {args}")
     print("#"*80)
     print("")
 
@@ -132,7 +145,9 @@ def print_thread_info(func):
 @print_exec_time
 def Initializer():
     """Initializer : To be used for initializing data before processing"""
-    pass
+    global PROCESSOR_THREADS
+    PROCESSOR_THREADS = 1 if args.threads == None else args.threads
+    logger.debug(f"Configured No. of processor threads : {args.threads}")
 
 @print_thread_info
 def process():
@@ -161,6 +176,7 @@ def Finalizer():
 if __name__ == "__main__":
 
     # Pre Steps
+    _init_command_line_arguments()
     _init_directories()
     _init_logger()
     _print_header()
