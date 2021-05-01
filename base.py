@@ -139,9 +139,23 @@ def print_thread_info(func):
     return wrap
 
 #################################################################################
+
+def handle_exceptions(func):
+    """Decorator that handle exception for safe batch processing"""
+    def wrap(*args, **kwargs):
+        result = None
+        try:
+            result = func(*args, **kwargs)
+        except Exception as ex:
+            logger.error(f"Exception occurred while processing : {ex}")
+        return result
+    return wrap
+
+#################################################################################
 # Core Methods ##################################################################
 #################################################################################
 
+@handle_exceptions
 @print_exec_time
 def Initializer():
     """Initializer : To be used for initializing data before processing"""
@@ -149,11 +163,16 @@ def Initializer():
     PROCESSOR_THREADS = 1 if args.threads == None else args.threads
     logger.debug(f"Configured No. of processor threads : {args.threads}")
 
+#################################################################################
+
 @print_thread_info
 def process():
     """Processor : To put main processing logic"""
     pass
 
+#################################################################################
+
+@handle_exceptions
 @print_exec_time
 def Executor():
     """Executor : To execute the process in multi-threading mode"""
@@ -161,6 +180,9 @@ def Executor():
     results = _wait_for_threads(processor_threads)
     logger.info(f"Results from all threads : {results}")
 
+#################################################################################
+
+@handle_exceptions
 @print_exec_time
 def Finalizer():
     """
