@@ -22,8 +22,12 @@ import argparse
 from datetime import datetime
 
 import pyfiglet
+import yaml
 
 PROCESSOR_THREADS = 8
+
+CONFIG_FILE_NAME = 'config.yaml'
+CONFIG_FILE_DATA = None
 
 LOGS_DIR = 'logs'
 INPUT_DIR = 'input'
@@ -42,8 +46,25 @@ def _init_command_line_arguments():
     argument_parser = argparse.ArgumentParser()
     argument_parser.add_argument('-i', '--input', help='Name of input file.')
     argument_parser.add_argument('-o', '--output', help='Name of output file.')
+    argument_parser.add_argument('-c', '--config', help='Name of external configuration file')
     argument_parser.add_argument('-t', '--threads', type=int, default=1, help='No. of threads for processor.')
     args = argument_parser.parse_args()
+
+################################################################################
+
+def _load_configurations():
+    """Loading configurations from config file"""
+    global CONFIG_FILE_DATA
+    global CONFIG_FILE_NAME
+    if args.config:
+        CONFIG_FILE_NAME = args.config
+        logger.info(f"External configurations provided : {CONFIG_FILE_NAME}")
+    if CONFIG_FILE_NAME and not os.path.exists(CONFIG_FILE_NAME):
+        logger.info(f"No external configuration file found with name : {CONFIG_FILE_NAME}")
+        return
+    with open(CONFIG_FILE_NAME) as config_file:
+        CONFIG_FILE_DATA = yaml.full_load(config_file)
+        logger.info(f"Loaded data from configuration file : {CONFIG_FILE_NAME}")
 
 #################################################################################
 
@@ -202,6 +223,7 @@ if __name__ == "__main__":
     _init_directories()
     _init_logger()
     _print_header()
+    _load_configurations()
 
     # Started batch job
     start_time = datetime.now()
