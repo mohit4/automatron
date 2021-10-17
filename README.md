@@ -14,13 +14,13 @@ Generating projects through automatron is pretty straight forward.
 
 1. Place the contents of ```dist/``` directory in your windows C drive.
 
-    ![snip1](snip1.png)
+    ![snip1](snip1.PNG)
 
 2. Edit your system PATH variable and add the below mentioned entry.
 
     ```C:\automatron```
 
-    ![snip2](snip2.png)
+    ![snip2](snip2.PNG)
 
 3. Open command prompt or windows power shell and execute the below command to create project.
 
