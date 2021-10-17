@@ -33,6 +33,7 @@ SNIPPET_FILE_NAMES = (
     "globals.py",
     "methods.py",
 )
+SNIPPETS_PATH = None
 
 BASIC_CONFIG = {
     "logging": "DEBUG"
@@ -59,6 +60,13 @@ if __name__ == "__main__":
     finalize()
 """
 
+
+def fetch_env_path():
+    """ Method to fetch and populate the global value in SNIPPETS_PATH """
+    global SNIPPETS_PATH
+    path_data = os.environ['PATH']
+    SNIPPETS_PATH = [ x for x in path_data.split(';') if 'automatron' in x ][0]
+
 def create_config_file():
     """ Method to create a configuration file """
     with open( os.path.join( JOB_NAME, CONFIG_FILE_NAME ), 'w' ) as config_file:
@@ -71,7 +79,7 @@ def create_basic_file():
         mainScript.write( HEADER_SNIPPET%( args.create ) )
 
         for SNIPPET_FILE in SNIPPET_FILE_NAMES:
-            with open( os.path.join( SNIPPETS_DIR, BASE_DIR, SNIPPET_FILE ) ) as snippet_file:
+            with open( os.path.join( SNIPPETS_PATH, SNIPPETS_DIR, BASE_DIR, SNIPPET_FILE ) ) as snippet_file:
                 mainScript.write( "".join( snippet_file.readlines() ) )
                 mainScript.write( "\n\n" )
         
@@ -92,6 +100,7 @@ if __name__ == "__main__":
         if not os.path.exists( JOB_NAME ):
             os.mkdir( JOB_NAME )
 
+        fetch_env_path()
         create_config_file()
         create_basic_file()
 

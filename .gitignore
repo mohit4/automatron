@@ -132,3 +132,6 @@ dmypy.json
 /input
 /output
 /logs
+
+# Ignoring test project generated
+/demo
